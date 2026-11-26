@@ -23,6 +23,11 @@
 - Criação do arquivo `lib/supabase_config.dart` para centralizar a inicialização do Supabase.
 - Implementação do `lib/admin.dart` com formulário para cadastro e envio de novos filmes para o banco na nuvem.
 
+### Commit 4 — Implementação da timeline no App Usuário (`lib/main.dart`)
+- Criação da tela de timeline em `lib/main.dart` consumindo os filmes cadastrados na tabela `filmes` do Supabase.
+- Exibição de título, sinopse, avaliação, imagem e comentário em cards, com suporte a atualizar/recarregar a lista.
+- Atualização do `RELATORIO.md` registrando o avanço da etapa.
+
 ### Próximos Passos (até 09/12)
-- Implementar a timeline de leitura no `lib/main.dart` exibindo todos os filmes cadastrados.
-- Manter ao menos 2 commits verificáveis por semana e registrar cada alteração neste relatório.
+- Testar o fluxo ponta a ponta (cadastrar via `lib/admin.dart` e conferir na timeline via `lib/main.dart`).
+- Manter ao menos 2 commits verificáveis por semana e atualizar o `RELATORIO.md` a cada passo concluído.
