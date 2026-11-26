@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'models/filme.dart';
 import 'supabase_config.dart';
 
@@ -144,8 +145,15 @@ class _FilmeCard extends StatelessWidget {
 
   const _FilmeCard({required this.filme});
 
+  bool _ehSvg(String url) {
+    final limpo = url.trim().toLowerCase().split('?').first;
+    return limpo.endsWith('.svg') || url.trim().startsWith('data:image/svg+xml');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final imagemUrl = filme.imagemUrl.trim();
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       clipBehavior: Clip.antiAlias,
@@ -153,26 +161,37 @@ class _FilmeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (filme.imagemUrl.trim().isNotEmpty)
-            SizedBox(
-              height: 210,
+          if (imagemUrl.isNotEmpty)
+            Container(
+              height: 240,
               width: double.infinity,
-              child: Image.network(
-                filme.imagemUrl.trim(),
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  color: Colors.black12,
-                  alignment: Alignment.center,
-                  child: const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.broken_image, size: 40),
-                      SizedBox(height: 6),
-                      Text('Imagem indisponível'),
-                    ],
-                  ),
-                ),
-              ),
+              color: Colors.black12,
+              padding: const EdgeInsets.all(8),
+              child: _ehSvg(imagemUrl)
+                  ? SvgPicture.network(
+                      imagemUrl,
+                      fit: BoxFit.contain,
+                      placeholderBuilder: (_) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorBuilder: (_, __, ___) => const Center(
+                        child: Text('Não foi possível carregar esse SVG'),
+                      ),
+                    )
+                  : Image.network(
+                      imagemUrl,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => Container(
+                        alignment: Alignment.center,
+                        child: const Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.broken_image, size: 40),
+                            SizedBox(height: 6),
+                            Text('Imagem indisponível'),
+                          ],
+                        ),
+                      ),
+                    ),
             ),
           Padding(
             padding: const EdgeInsets.all(14),

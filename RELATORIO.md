@@ -28,6 +28,11 @@
 - Exibição de título, sinopse, avaliação, imagem e comentário em cards, com suporte a atualizar/recarregar a lista.
 - Atualização do `RELATORIO.md` registrando o avanço da etapa.
 
+### Commit 5 — Suporte a SVG e enquadramento sem cortes (`BoxFit.contain`)
+- Adição do pacote `flutter_svg` para renderização de imagens SVG no preview do `lib/admin.dart` e nos cards do `lib/main.dart`.
+- Ajuste do enquadramento para `BoxFit.contain` e tratamento de erro para URLs inválidas ou não encontradas.
+- Atualização do `RELATORIO.md` com o avanço da etapa.
+
 ### Próximos Passos (até 09/12)
-- Testar o fluxo ponta a ponta (cadastrar via `lib/admin.dart` e conferir na timeline via `lib/main.dart`).
+- Realizar novos testes de cadastro e leitura na timeline para validar URLs diretas de imagens e SVGs.
 - Manter ao menos 2 commits verificáveis por semana e atualizar o `RELATORIO.md` a cada passo concluído.

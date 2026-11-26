@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'models/filme.dart';
 import 'supabase_config.dart';
 
@@ -39,7 +40,7 @@ class _CadastroFilmePageState extends State<CadastroFilmePage> {
   final _imagemController = TextEditingController();
   final _comentarioController = TextEditingController();
 
-  double _avaliacao = 4.0;
+  double _avaliacao = 4.5;
   bool _salvando = false;
 
   @override
@@ -49,6 +50,24 @@ class _CadastroFilmePageState extends State<CadastroFilmePage> {
     _imagemController.dispose();
     _comentarioController.dispose();
     super.dispose();
+  }
+
+  bool _ehSvg(String url) {
+    final limpo = url.trim().toLowerCase().split('?').first;
+    return limpo.endsWith('.svg') || url.trim().startsWith('data:image/svg+xml');
+  }
+
+  void _preencherExemploTeste() {
+    setState(() {
+      _tituloController.text = 'Interestelar';
+      _sinopseController.text =
+          'Uma equipe de exploradores viaja através de um buraco de minhoca no espaço na tentativa de garantir a sobrevivência da humanidade.';
+      _avaliacao = 5.0;
+      _imagemController.text =
+          'https://upload.wikimedia.org/wikipedia/commons/6/69/IMDB_Logo_2016.svg';
+      _comentarioController.text =
+          'Trilha sonora impecável do Hans Zimmer e ficção científica emocionante do início ao fim.';
+    });
   }
 
   Future<void> _salvarFilme() async {
@@ -73,7 +92,7 @@ class _CadastroFilmePageState extends State<CadastroFilmePage> {
       _sinopseController.clear();
       _imagemController.clear();
       _comentarioController.clear();
-      setState(() => _avaliacao = 4.0);
+      setState(() => _avaliacao = 4.5);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Filme publicado na timeline com sucesso!')),
@@ -88,11 +107,52 @@ class _CadastroFilmePageState extends State<CadastroFilmePage> {
     }
   }
 
+  Widget _buildPreviewImagem(String url) {
+    final link = url.trim();
+    if (link.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      height: 240,
+      margin: const EdgeInsets.only(top: 12),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.black12,
+        border: Border.all(color: Colors.black26),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: _ehSvg(link)
+          ? SvgPicture.network(
+              link,
+              fit: BoxFit.contain,
+              placeholderBuilder: (_) =>
+                  const Center(child: CircularProgressIndicator()),
+              errorBuilder: (_, __, ___) => const Center(
+                child: Text('Não foi possível carregar esse SVG'),
+              ),
+            )
+          : Image.network(
+              link,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const Center(
+                child: Text('Não foi possível pré-visualizar essa URL'),
+              ),
+            ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin — Nova Dica de Filme'),
+        actions: [
+          TextButton.icon(
+            onPressed: _preencherExemploTeste,
+            icon: const Icon(Icons.auto_fix_high),
+            label: const Text('Exemplo SVG'),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -134,15 +194,17 @@ class _CadastroFilmePageState extends State<CadastroFilmePage> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _imagemController,
+                onChanged: (_) => setState(() {}),
                 decoration: const InputDecoration(
-                  labelText: 'URL da imagem (pôster/capa)',
-                  hintText: 'https://...',
+                  labelText: 'URL da imagem (SVG, PNG ou JPG)',
+                  hintText: 'https://exemplo.com/poster.svg',
                   border: OutlineInputBorder(),
                 ),
                 validator: (v) => (v == null || v.trim().isEmpty)
                     ? 'Informe o link da imagem'
                     : null,
               ),
+              _buildPreviewImagem(_imagemController.text),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _comentarioController,
